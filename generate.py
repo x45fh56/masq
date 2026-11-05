@@ -1,7 +1,13 @@
-import json, random, re, time, urllib.request
+import json
+import random
+import re
+import time
+import urllib.parse
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
+# ======================= تنظیمات =======================
 APIS = [
     "https://masque.configwireguard.workers.dev/",
     "https://masque.configwireguard2.workers.dev/",
@@ -16,8 +22,14 @@ COUNT = 10
 TRACE_URL = "https://cloudflare.com/cdn-cgi/trace"
 
 
+# ======================= توابع کمکی =======================
 def pem_body(s):
     return re.sub(r"-----[^-]+-----|\s", "", s or "")
+
+
+def enc(s):
+    # معادل encodeURIComponent در جاوااسکریپت
+    return urllib.parse.quote(str(s), safe="!~*'()")
 
 
 def get_key():
@@ -47,11 +59,16 @@ def pick_nodes():
     return nodes
 
 
-# ---------------- Xray (v2rayN / Throne / OneXray) ----------------
-def build_xray(k, nodes):
+def tunnel_addresses(k):
     address = [k["ipv4"].split("/")[0] + "/32"]
     if k.get("ipv6"):
         address.append(k["ipv6"].split("/")[0] + "/128")
+    return address
+
+
+# ======================= Xray (v2rayN / Throne / OneXray) =======================
+def build_xray(k, nodes):
+    address = tunnel_addresses(k)
     outbounds = []
     for ip, port in nodes:
         outbounds.append({
@@ -72,7 +89,7 @@ def build_xray(k, nodes):
     return json.dumps({"log": {"loglevel": "warning"}, "outbounds": outbounds}, indent=2)
 
 
-# ---------------- Clash (Mihomo) ----------------
+# ======================= Clash (Mihomo) =======================
 CLASH_TEMPLATE = """# Generated - __STAMP__
 # Needs a Mihomo core with MASQUE support (keep the core up to date)
 
@@ -210,13 +227,42 @@ def build_clash(k, nodes):
             .replace("__PROXIES__", "\n\n".join(blocks)))
 
 
+# ======================= MahsaNG (masque:// links) =======================
+def build_mahsa_links(k, nodes):
+    raw = pem_body(k["private_key"])
+    address = tunnel_addresses(k)
+    first_dns = DNS[0] if DNS else "1.1.1.1"
+
+    links = []
+    for ip, port in nodes:
+        host = f"[{ip}]" if ":" in ip else ip
+        q = [
+            ("transport", MODE),
+            ("address", ",".join(address)),
+            ("mtu", "1280"),
+            ("remoteDNS", first_dns),
+            ("sni", SNI),
+            ("insecure", "1"),
+            ("keepalive", "5"),
+        ]
+        query = "&".join(f"{a}={enc(b)}" for a, b in q)
+        tag = f"{MODE.upper()} | Official | {ip} | {port} | MASQUE Nav"
+        links.append(f"masque://{enc(raw)}@{host}:{port}?{query}#{enc(tag)}")
+    return "\n".join(links)
+
+
+# ======================= اجرای اصلی =======================
 def main():
     k = get_key()
     nodes = pick_nodes()
     Path("output").mkdir(exist_ok=True)
-    Path("output/masque-xray.json").write_text(build_xray(k, nodes), encoding="utf-8")
+
+    xray_json = build_xray(k, nodes)
+    Path("output/masque-xray.json").write_text(xray_json, encoding="utf-8")
+    Path("output/masque-xray.txt").write_text(xray_json, encoding="utf-8")
     Path("output/masque-clash.yaml").write_text(build_clash(k, nodes), encoding="utf-8")
-    print(f"wrote {len(nodes)} nodes (xray + clash)")
+    Path("output/masque-mahsang.txt").write_text(build_mahsa_links(k, nodes), encoding="utf-8")
+    print(f"wrote {len(nodes)} nodes (xray json+txt, clash yaml, mahsang links)")
 
 
 main()
