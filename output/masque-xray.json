@@ -1,0 +1,327 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "outbounds": [
+    {
+      "protocol": "masque",
+      "settings": {
+        "address": "162.159.198.32",
+        "port": 4500,
+        "remoteDNS": [
+          "1.1.1.1",
+          "8.8.8.8"
+        ]
+      },
+      "streamSettings": {
+        "method": "masque",
+        "masqueSettings": {
+          "warp": {
+            "privateKey": "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg==",
+            "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+            "address": [
+              "172.16.0.2/32",
+              "2606:4700:110:848e:f0f7:f3d1:ef76:7c8d/128"
+            ]
+          }
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.cloudflare.com",
+          "alpn": [
+            "h2"
+          ]
+        }
+      },
+      "tag": "H2 | Official | 162.159.198.32 | 4500"
+    },
+    {
+      "protocol": "masque",
+      "settings": {
+        "address": "162.159.198.249",
+        "port": 443,
+        "remoteDNS": [
+          "1.1.1.1",
+          "8.8.8.8"
+        ]
+      },
+      "streamSettings": {
+        "method": "masque",
+        "masqueSettings": {
+          "warp": {
+            "privateKey": "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg==",
+            "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+            "address": [
+              "172.16.0.2/32",
+              "2606:4700:110:848e:f0f7:f3d1:ef76:7c8d/128"
+            ]
+          }
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.cloudflare.com",
+          "alpn": [
+            "h2"
+          ]
+        }
+      },
+      "tag": "H2 | Official | 162.159.198.249 | 443"
+    },
+    {
+      "protocol": "masque",
+      "settings": {
+        "address": "162.159.198.69",
+        "port": 1701,
+        "remoteDNS": [
+          "1.1.1.1",
+          "8.8.8.8"
+        ]
+      },
+      "streamSettings": {
+        "method": "masque",
+        "masqueSettings": {
+          "warp": {
+            "privateKey": "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg==",
+            "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+            "address": [
+              "172.16.0.2/32",
+              "2606:4700:110:848e:f0f7:f3d1:ef76:7c8d/128"
+            ]
+          }
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.cloudflare.com",
+          "alpn": [
+            "h2"
+          ]
+        }
+      },
+      "tag": "H2 | Official | 162.159.198.69 | 1701"
+    },
+    {
+      "protocol": "masque",
+      "settings": {
+        "address": "162.159.198.29",
+        "port": 1701,
+        "remoteDNS": [
+          "1.1.1.1",
+          "8.8.8.8"
+        ]
+      },
+      "streamSettings": {
+        "method": "masque",
+        "masqueSettings": {
+          "warp": {
+            "privateKey": "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg==",
+            "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+            "address": [
+              "172.16.0.2/32",
+              "2606:4700:110:848e:f0f7:f3d1:ef76:7c8d/128"
+            ]
+          }
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.cloudflare.com",
+          "alpn": [
+            "h2"
+          ]
+        }
+      },
+      "tag": "H2 | Official | 162.159.198.29 | 1701"
+    },
+    {
+      "protocol": "masque",
+      "settings": {
+        "address": "162.159.198.73",
+        "port": 4500,
+        "remoteDNS": [
+          "1.1.1.1",
+          "8.8.8.8"
+        ]
+      },
+      "streamSettings": {
+        "method": "masque",
+        "masqueSettings": {
+          "warp": {
+            "privateKey": "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg==",
+            "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+            "address": [
+              "172.16.0.2/32",
+              "2606:4700:110:848e:f0f7:f3d1:ef76:7c8d/128"
+            ]
+          }
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.cloudflare.com",
+          "alpn": [
+            "h2"
+          ]
+        }
+      },
+      "tag": "H2 | Official | 162.159.198.73 | 4500"
+    },
+    {
+      "protocol": "masque",
+      "settings": {
+        "address": "162.159.198.131",
+        "port": 500,
+        "remoteDNS": [
+          "1.1.1.1",
+          "8.8.8.8"
+        ]
+      },
+      "streamSettings": {
+        "method": "masque",
+        "masqueSettings": {
+          "warp": {
+            "privateKey": "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg==",
+            "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+            "address": [
+              "172.16.0.2/32",
+              "2606:4700:110:848e:f0f7:f3d1:ef76:7c8d/128"
+            ]
+          }
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.cloudflare.com",
+          "alpn": [
+            "h2"
+          ]
+        }
+      },
+      "tag": "H2 | Official | 162.159.198.131 | 500"
+    },
+    {
+      "protocol": "masque",
+      "settings": {
+        "address": "162.159.198.170",
+        "port": 1701,
+        "remoteDNS": [
+          "1.1.1.1",
+          "8.8.8.8"
+        ]
+      },
+      "streamSettings": {
+        "method": "masque",
+        "masqueSettings": {
+          "warp": {
+            "privateKey": "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg==",
+            "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+            "address": [
+              "172.16.0.2/32",
+              "2606:4700:110:848e:f0f7:f3d1:ef76:7c8d/128"
+            ]
+          }
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.cloudflare.com",
+          "alpn": [
+            "h2"
+          ]
+        }
+      },
+      "tag": "H2 | Official | 162.159.198.170 | 1701"
+    },
+    {
+      "protocol": "masque",
+      "settings": {
+        "address": "162.159.198.38",
+        "port": 8095,
+        "remoteDNS": [
+          "1.1.1.1",
+          "8.8.8.8"
+        ]
+      },
+      "streamSettings": {
+        "method": "masque",
+        "masqueSettings": {
+          "warp": {
+            "privateKey": "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg==",
+            "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+            "address": [
+              "172.16.0.2/32",
+              "2606:4700:110:848e:f0f7:f3d1:ef76:7c8d/128"
+            ]
+          }
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.cloudflare.com",
+          "alpn": [
+            "h2"
+          ]
+        }
+      },
+      "tag": "H2 | Official | 162.159.198.38 | 8095"
+    },
+    {
+      "protocol": "masque",
+      "settings": {
+        "address": "162.159.198.191",
+        "port": 443,
+        "remoteDNS": [
+          "1.1.1.1",
+          "8.8.8.8"
+        ]
+      },
+      "streamSettings": {
+        "method": "masque",
+        "masqueSettings": {
+          "warp": {
+            "privateKey": "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg==",
+            "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+            "address": [
+              "172.16.0.2/32",
+              "2606:4700:110:848e:f0f7:f3d1:ef76:7c8d/128"
+            ]
+          }
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.cloudflare.com",
+          "alpn": [
+            "h2"
+          ]
+        }
+      },
+      "tag": "H2 | Official | 162.159.198.191 | 443"
+    },
+    {
+      "protocol": "masque",
+      "settings": {
+        "address": "162.159.198.142",
+        "port": 4500,
+        "remoteDNS": [
+          "1.1.1.1",
+          "8.8.8.8"
+        ]
+      },
+      "streamSettings": {
+        "method": "masque",
+        "masqueSettings": {
+          "warp": {
+            "privateKey": "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg==",
+            "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+            "address": [
+              "172.16.0.2/32",
+              "2606:4700:110:848e:f0f7:f3d1:ef76:7c8d/128"
+            ]
+          }
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.cloudflare.com",
+          "alpn": [
+            "h2"
+          ]
+        }
+      },
+      "tag": "H2 | Official | 162.159.198.142 | 4500"
+    }
+  ]
+}
