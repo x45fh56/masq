@@ -1,4 +1,4 @@
-# Generated - 2026/11/05 05:45:18 UTC
+# Generated - 2026/11/05 07:35:08 UTC
 # Needs a Mihomo core with MASQUE support (keep the core up to date)
 
 mode: rule
@@ -73,15 +73,15 @@ proxy-groups:
     url: https://cloudflare.com/cdn-cgi/trace
     interval: 300
     tolerance: 30
-    proxies: ["Official | 162.159.198.32 | 4500 | MASQUE Nav", "Official | 162.159.198.249 | 443 | MASQUE Nav", "Official | 162.159.198.69 | 1701 | MASQUE Nav", "Official | 162.159.198.29 | 1701 | MASQUE Nav", "Official | 162.159.198.73 | 4500 | MASQUE Nav", "Official | 162.159.198.131 | 500 | MASQUE Nav", "Official | 162.159.198.170 | 1701 | MASQUE Nav", "Official | 162.159.198.38 | 8095 | MASQUE Nav", "Official | 162.159.198.191 | 443 | MASQUE Nav", "Official | 162.159.198.142 | 4500 | MASQUE Nav"]
+    proxies: ["Official | 162.159.198.111 | 500 | MASQUE Nav", "Official | 162.159.198.4 | 443 | MASQUE Nav", "Official | 162.159.198.124 | 1701 | MASQUE Nav", "Official | 162.159.198.66 | 8443 | MASQUE Nav", "Official | 162.159.198.36 | 500 | MASQUE Nav", "Official | 162.159.198.89 | 4500 | MASQUE Nav", "Official | 162.159.198.11 | 8095 | MASQUE Nav", "Official | 162.159.198.43 | 1701 | MASQUE Nav", "Official | 162.159.198.25 | 8095 | MASQUE Nav", "Official | 162.159.198.235 | 4443 | MASQUE Nav"]
   - name: Endpoint-Failover
     type: fallback
     url: https://cloudflare.com/cdn-cgi/trace
     interval: 300
-    proxies: ["Official | 162.159.198.32 | 4500 | MASQUE Nav", "Official | 162.159.198.249 | 443 | MASQUE Nav", "Official | 162.159.198.69 | 1701 | MASQUE Nav", "Official | 162.159.198.29 | 1701 | MASQUE Nav", "Official | 162.159.198.73 | 4500 | MASQUE Nav", "Official | 162.159.198.131 | 500 | MASQUE Nav", "Official | 162.159.198.170 | 1701 | MASQUE Nav", "Official | 162.159.198.38 | 8095 | MASQUE Nav", "Official | 162.159.198.191 | 443 | MASQUE Nav", "Official | 162.159.198.142 | 4500 | MASQUE Nav"]
+    proxies: ["Official | 162.159.198.111 | 500 | MASQUE Nav", "Official | 162.159.198.4 | 443 | MASQUE Nav", "Official | 162.159.198.124 | 1701 | MASQUE Nav", "Official | 162.159.198.66 | 8443 | MASQUE Nav", "Official | 162.159.198.36 | 500 | MASQUE Nav", "Official | 162.159.198.89 | 4500 | MASQUE Nav", "Official | 162.159.198.11 | 8095 | MASQUE Nav", "Official | 162.159.198.43 | 1701 | MASQUE Nav", "Official | 162.159.198.25 | 8095 | MASQUE Nav", "Official | 162.159.198.235 | 4443 | MASQUE Nav"]
   - name: Endpoint-Manual
     type: select
-    proxies: ["Official | 162.159.198.32 | 4500 | MASQUE Nav", "Official | 162.159.198.249 | 443 | MASQUE Nav", "Official | 162.159.198.69 | 1701 | MASQUE Nav", "Official | 162.159.198.29 | 1701 | MASQUE Nav", "Official | 162.159.198.73 | 4500 | MASQUE Nav", "Official | 162.159.198.131 | 500 | MASQUE Nav", "Official | 162.159.198.170 | 1701 | MASQUE Nav", "Official | 162.159.198.38 | 8095 | MASQUE Nav", "Official | 162.159.198.191 | 443 | MASQUE Nav", "Official | 162.159.198.142 | 4500 | MASQUE Nav"]
+    proxies: ["Official | 162.159.198.111 | 500 | MASQUE Nav", "Official | 162.159.198.4 | 443 | MASQUE Nav", "Official | 162.159.198.124 | 1701 | MASQUE Nav", "Official | 162.159.198.66 | 8443 | MASQUE Nav", "Official | 162.159.198.36 | 500 | MASQUE Nav", "Official | 162.159.198.89 | 4500 | MASQUE Nav", "Official | 162.159.198.11 | 8095 | MASQUE Nav", "Official | 162.159.198.43 | 1701 | MASQUE Nav", "Official | 162.159.198.25 | 8095 | MASQUE Nav", "Official | 162.159.198.235 | 4443 | MASQUE Nav"]
 
 rules:
   - GEOSITE,private,DIRECT
@@ -91,99 +91,14 @@ rules:
   - MATCH,Proxy-Select
 
 proxies:
-  - name: "Official | 162.159.198.32 | 4500 | MASQUE Nav"
+  - name: "Official | 162.159.198.111 | 500 | MASQUE Nav"
     type: masque
-    server: 162.159.198.32
-    port: 4500
-    private-key: "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg=="
-    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
-    ip: 172.16.0.2
-    ipv6: 2606:4700:110:848e:f0f7:f3d1:ef76:7c8d
-    uri: https://cloudflareaccess.com
-    mtu: 1280
-    udp: true
-    remote-dns-resolve: true
-    congestion-controller: bbr
-    dns: [ 1.1.1.1, 8.8.8.8 ]
-    sni: www.cloudflare.com
-    network: h2
-
-  - name: "Official | 162.159.198.249 | 443 | MASQUE Nav"
-    type: masque
-    server: 162.159.198.249
-    port: 443
-    private-key: "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg=="
-    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
-    ip: 172.16.0.2
-    ipv6: 2606:4700:110:848e:f0f7:f3d1:ef76:7c8d
-    uri: https://cloudflareaccess.com
-    mtu: 1280
-    udp: true
-    remote-dns-resolve: true
-    congestion-controller: bbr
-    dns: [ 1.1.1.1, 8.8.8.8 ]
-    sni: www.cloudflare.com
-    network: h2
-
-  - name: "Official | 162.159.198.69 | 1701 | MASQUE Nav"
-    type: masque
-    server: 162.159.198.69
-    port: 1701
-    private-key: "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg=="
-    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
-    ip: 172.16.0.2
-    ipv6: 2606:4700:110:848e:f0f7:f3d1:ef76:7c8d
-    uri: https://cloudflareaccess.com
-    mtu: 1280
-    udp: true
-    remote-dns-resolve: true
-    congestion-controller: bbr
-    dns: [ 1.1.1.1, 8.8.8.8 ]
-    sni: www.cloudflare.com
-    network: h2
-
-  - name: "Official | 162.159.198.29 | 1701 | MASQUE Nav"
-    type: masque
-    server: 162.159.198.29
-    port: 1701
-    private-key: "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg=="
-    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
-    ip: 172.16.0.2
-    ipv6: 2606:4700:110:848e:f0f7:f3d1:ef76:7c8d
-    uri: https://cloudflareaccess.com
-    mtu: 1280
-    udp: true
-    remote-dns-resolve: true
-    congestion-controller: bbr
-    dns: [ 1.1.1.1, 8.8.8.8 ]
-    sni: www.cloudflare.com
-    network: h2
-
-  - name: "Official | 162.159.198.73 | 4500 | MASQUE Nav"
-    type: masque
-    server: 162.159.198.73
-    port: 4500
-    private-key: "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg=="
-    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
-    ip: 172.16.0.2
-    ipv6: 2606:4700:110:848e:f0f7:f3d1:ef76:7c8d
-    uri: https://cloudflareaccess.com
-    mtu: 1280
-    udp: true
-    remote-dns-resolve: true
-    congestion-controller: bbr
-    dns: [ 1.1.1.1, 8.8.8.8 ]
-    sni: www.cloudflare.com
-    network: h2
-
-  - name: "Official | 162.159.198.131 | 500 | MASQUE Nav"
-    type: masque
-    server: 162.159.198.131
+    server: 162.159.198.111
     port: 500
-    private-key: "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg=="
+    private-key: "MHcCAQEEIAs5lPrvLFvJ+5dKIeSt6SjMqbBphHsQ7kTBbgkpx2jLoAoGCCqGSM49AwEHoUQDQgAEVYWRPHeT5vI1YGTWKSRtJ7FSFrViylhQKfzlnFdLeKldWB36XgVA3y/D6GM6o2Hp6Nbg8xn77lMXx+F7zW0/oQ=="
     public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
     ip: 172.16.0.2
-    ipv6: 2606:4700:110:848e:f0f7:f3d1:ef76:7c8d
+    ipv6: 2606:4700:110:804b:e5fb:57ec:d57d:45e5
     uri: https://cloudflareaccess.com
     mtu: 1280
     udp: true
@@ -193,48 +108,14 @@ proxies:
     sni: www.cloudflare.com
     network: h2
 
-  - name: "Official | 162.159.198.170 | 1701 | MASQUE Nav"
+  - name: "Official | 162.159.198.4 | 443 | MASQUE Nav"
     type: masque
-    server: 162.159.198.170
-    port: 1701
-    private-key: "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg=="
-    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
-    ip: 172.16.0.2
-    ipv6: 2606:4700:110:848e:f0f7:f3d1:ef76:7c8d
-    uri: https://cloudflareaccess.com
-    mtu: 1280
-    udp: true
-    remote-dns-resolve: true
-    congestion-controller: bbr
-    dns: [ 1.1.1.1, 8.8.8.8 ]
-    sni: www.cloudflare.com
-    network: h2
-
-  - name: "Official | 162.159.198.38 | 8095 | MASQUE Nav"
-    type: masque
-    server: 162.159.198.38
-    port: 8095
-    private-key: "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg=="
-    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
-    ip: 172.16.0.2
-    ipv6: 2606:4700:110:848e:f0f7:f3d1:ef76:7c8d
-    uri: https://cloudflareaccess.com
-    mtu: 1280
-    udp: true
-    remote-dns-resolve: true
-    congestion-controller: bbr
-    dns: [ 1.1.1.1, 8.8.8.8 ]
-    sni: www.cloudflare.com
-    network: h2
-
-  - name: "Official | 162.159.198.191 | 443 | MASQUE Nav"
-    type: masque
-    server: 162.159.198.191
+    server: 162.159.198.4
     port: 443
-    private-key: "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg=="
+    private-key: "MHcCAQEEIAs5lPrvLFvJ+5dKIeSt6SjMqbBphHsQ7kTBbgkpx2jLoAoGCCqGSM49AwEHoUQDQgAEVYWRPHeT5vI1YGTWKSRtJ7FSFrViylhQKfzlnFdLeKldWB36XgVA3y/D6GM6o2Hp6Nbg8xn77lMXx+F7zW0/oQ=="
     public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
     ip: 172.16.0.2
-    ipv6: 2606:4700:110:848e:f0f7:f3d1:ef76:7c8d
+    ipv6: 2606:4700:110:804b:e5fb:57ec:d57d:45e5
     uri: https://cloudflareaccess.com
     mtu: 1280
     udp: true
@@ -244,14 +125,133 @@ proxies:
     sni: www.cloudflare.com
     network: h2
 
-  - name: "Official | 162.159.198.142 | 4500 | MASQUE Nav"
+  - name: "Official | 162.159.198.124 | 1701 | MASQUE Nav"
     type: masque
-    server: 162.159.198.142
-    port: 4500
-    private-key: "MHcCAQEEIGZL2twJbfRlT8orlvfRto25DxcE+qUv+UzJSlo3J/lxoAoGCCqGSM49AwEHoUQDQgAE8u9UfOjJnRhRm9PnFYp73648/KgKiDE0CrYPzC0CpWshPvZr2aXwG2yLN+YTk9tHQoyCLfDfA46qHELCijmagg=="
+    server: 162.159.198.124
+    port: 1701
+    private-key: "MHcCAQEEIAs5lPrvLFvJ+5dKIeSt6SjMqbBphHsQ7kTBbgkpx2jLoAoGCCqGSM49AwEHoUQDQgAEVYWRPHeT5vI1YGTWKSRtJ7FSFrViylhQKfzlnFdLeKldWB36XgVA3y/D6GM6o2Hp6Nbg8xn77lMXx+F7zW0/oQ=="
     public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
     ip: 172.16.0.2
-    ipv6: 2606:4700:110:848e:f0f7:f3d1:ef76:7c8d
+    ipv6: 2606:4700:110:804b:e5fb:57ec:d57d:45e5
+    uri: https://cloudflareaccess.com
+    mtu: 1280
+    udp: true
+    remote-dns-resolve: true
+    congestion-controller: bbr
+    dns: [ 1.1.1.1, 8.8.8.8 ]
+    sni: www.cloudflare.com
+    network: h2
+
+  - name: "Official | 162.159.198.66 | 8443 | MASQUE Nav"
+    type: masque
+    server: 162.159.198.66
+    port: 8443
+    private-key: "MHcCAQEEIAs5lPrvLFvJ+5dKIeSt6SjMqbBphHsQ7kTBbgkpx2jLoAoGCCqGSM49AwEHoUQDQgAEVYWRPHeT5vI1YGTWKSRtJ7FSFrViylhQKfzlnFdLeKldWB36XgVA3y/D6GM6o2Hp6Nbg8xn77lMXx+F7zW0/oQ=="
+    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
+    ip: 172.16.0.2
+    ipv6: 2606:4700:110:804b:e5fb:57ec:d57d:45e5
+    uri: https://cloudflareaccess.com
+    mtu: 1280
+    udp: true
+    remote-dns-resolve: true
+    congestion-controller: bbr
+    dns: [ 1.1.1.1, 8.8.8.8 ]
+    sni: www.cloudflare.com
+    network: h2
+
+  - name: "Official | 162.159.198.36 | 500 | MASQUE Nav"
+    type: masque
+    server: 162.159.198.36
+    port: 500
+    private-key: "MHcCAQEEIAs5lPrvLFvJ+5dKIeSt6SjMqbBphHsQ7kTBbgkpx2jLoAoGCCqGSM49AwEHoUQDQgAEVYWRPHeT5vI1YGTWKSRtJ7FSFrViylhQKfzlnFdLeKldWB36XgVA3y/D6GM6o2Hp6Nbg8xn77lMXx+F7zW0/oQ=="
+    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
+    ip: 172.16.0.2
+    ipv6: 2606:4700:110:804b:e5fb:57ec:d57d:45e5
+    uri: https://cloudflareaccess.com
+    mtu: 1280
+    udp: true
+    remote-dns-resolve: true
+    congestion-controller: bbr
+    dns: [ 1.1.1.1, 8.8.8.8 ]
+    sni: www.cloudflare.com
+    network: h2
+
+  - name: "Official | 162.159.198.89 | 4500 | MASQUE Nav"
+    type: masque
+    server: 162.159.198.89
+    port: 4500
+    private-key: "MHcCAQEEIAs5lPrvLFvJ+5dKIeSt6SjMqbBphHsQ7kTBbgkpx2jLoAoGCCqGSM49AwEHoUQDQgAEVYWRPHeT5vI1YGTWKSRtJ7FSFrViylhQKfzlnFdLeKldWB36XgVA3y/D6GM6o2Hp6Nbg8xn77lMXx+F7zW0/oQ=="
+    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
+    ip: 172.16.0.2
+    ipv6: 2606:4700:110:804b:e5fb:57ec:d57d:45e5
+    uri: https://cloudflareaccess.com
+    mtu: 1280
+    udp: true
+    remote-dns-resolve: true
+    congestion-controller: bbr
+    dns: [ 1.1.1.1, 8.8.8.8 ]
+    sni: www.cloudflare.com
+    network: h2
+
+  - name: "Official | 162.159.198.11 | 8095 | MASQUE Nav"
+    type: masque
+    server: 162.159.198.11
+    port: 8095
+    private-key: "MHcCAQEEIAs5lPrvLFvJ+5dKIeSt6SjMqbBphHsQ7kTBbgkpx2jLoAoGCCqGSM49AwEHoUQDQgAEVYWRPHeT5vI1YGTWKSRtJ7FSFrViylhQKfzlnFdLeKldWB36XgVA3y/D6GM6o2Hp6Nbg8xn77lMXx+F7zW0/oQ=="
+    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
+    ip: 172.16.0.2
+    ipv6: 2606:4700:110:804b:e5fb:57ec:d57d:45e5
+    uri: https://cloudflareaccess.com
+    mtu: 1280
+    udp: true
+    remote-dns-resolve: true
+    congestion-controller: bbr
+    dns: [ 1.1.1.1, 8.8.8.8 ]
+    sni: www.cloudflare.com
+    network: h2
+
+  - name: "Official | 162.159.198.43 | 1701 | MASQUE Nav"
+    type: masque
+    server: 162.159.198.43
+    port: 1701
+    private-key: "MHcCAQEEIAs5lPrvLFvJ+5dKIeSt6SjMqbBphHsQ7kTBbgkpx2jLoAoGCCqGSM49AwEHoUQDQgAEVYWRPHeT5vI1YGTWKSRtJ7FSFrViylhQKfzlnFdLeKldWB36XgVA3y/D6GM6o2Hp6Nbg8xn77lMXx+F7zW0/oQ=="
+    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
+    ip: 172.16.0.2
+    ipv6: 2606:4700:110:804b:e5fb:57ec:d57d:45e5
+    uri: https://cloudflareaccess.com
+    mtu: 1280
+    udp: true
+    remote-dns-resolve: true
+    congestion-controller: bbr
+    dns: [ 1.1.1.1, 8.8.8.8 ]
+    sni: www.cloudflare.com
+    network: h2
+
+  - name: "Official | 162.159.198.25 | 8095 | MASQUE Nav"
+    type: masque
+    server: 162.159.198.25
+    port: 8095
+    private-key: "MHcCAQEEIAs5lPrvLFvJ+5dKIeSt6SjMqbBphHsQ7kTBbgkpx2jLoAoGCCqGSM49AwEHoUQDQgAEVYWRPHeT5vI1YGTWKSRtJ7FSFrViylhQKfzlnFdLeKldWB36XgVA3y/D6GM6o2Hp6Nbg8xn77lMXx+F7zW0/oQ=="
+    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
+    ip: 172.16.0.2
+    ipv6: 2606:4700:110:804b:e5fb:57ec:d57d:45e5
+    uri: https://cloudflareaccess.com
+    mtu: 1280
+    udp: true
+    remote-dns-resolve: true
+    congestion-controller: bbr
+    dns: [ 1.1.1.1, 8.8.8.8 ]
+    sni: www.cloudflare.com
+    network: h2
+
+  - name: "Official | 162.159.198.235 | 4443 | MASQUE Nav"
+    type: masque
+    server: 162.159.198.235
+    port: 4443
+    private-key: "MHcCAQEEIAs5lPrvLFvJ+5dKIeSt6SjMqbBphHsQ7kTBbgkpx2jLoAoGCCqGSM49AwEHoUQDQgAEVYWRPHeT5vI1YGTWKSRtJ7FSFrViylhQKfzlnFdLeKldWB36XgVA3y/D6GM6o2Hp6Nbg8xn77lMXx+F7zW0/oQ=="
+    public-key: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w=="
+    ip: 172.16.0.2
+    ipv6: 2606:4700:110:804b:e5fb:57ec:d57d:45e5
     uri: https://cloudflareaccess.com
     mtu: 1280
     udp: true
