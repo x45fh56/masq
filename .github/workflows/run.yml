@@ -1,8 +1,8 @@
 name: MASQUE configs (every 12h)
 on:
   schedule:
-    - cron: "15 */12 * * *"    
-  workflow_dispatch:      
+    - cron: "15 */12 * * *"
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
@@ -10,14 +10,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python generate.py
-      - name: Commit
+
+      - name: Download usque
+        continue-on-error: true      # اگر شکست خورد، فقط منبع Worker استفاده می‌شود
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          mkdir -p bin dl
+          gh release download --repo Diniboy1123/usque --pattern '*linux_amd64*' --dir dl
+          cd dl
+          for f in *; do
+            case "$f" in
+              *.zip) unzip -o "$f" ;;
+              *.tar.gz|*.tgz) tar xzf "$f" ;;
+            esac
+          done
+          BIN=$(find . -type f -name usque | head -n1)
+          [ -z "$BIN" ] && BIN=$(ls | head -n1)
+          cp "$BIN" ../bin/usque
+          chmod +x ../bin/usque
+
+      - name: Generate configs
+        run: python generate.py
+
+      - name: Publish to "output" branch (always a single commit)
+        run: |
+          mkdir /tmp/pub && cp output/* /tmp/pub/
+          cd /tmp/pub
+          git init -q -b output
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add output/
-          git diff --cached --quiet || git commit -m "configs $(date -u +'%F %H:%M UTC')"
-          git push
+          git add .
+          git commit -q -m "configs $(date -u +'%F %H:%M UTC')"
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          git push --force origin output
