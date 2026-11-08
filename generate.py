@@ -1,6 +1,10 @@
 import json
+import os
 import random
 import re
+import shutil
+import subprocess
+import tempfile
 import time
 import urllib.parse
 import urllib.request
@@ -15,10 +19,10 @@ APIS = [
     "https://masque.configwireguard4.workers.dev/",
 ]
 PORTS = ["8095", "443", "8443", "4443", "1701", "4500", "500"]
-MODE = "h2"                      # یا "h3"
+MODES = ["h2", "h3"]             # هر دو نسخه ساخته می‌شود
+PER_GROUP = 5                    # تعداد نود برای هر (منبع × مود)
 SNI = "www.cloudflare.com"
 DNS = ["1.1.1.1", "8.8.8.8"]
-COUNT = 10
 TRACE_URL = "https://cloudflare.com/cdn-cgi/trace"
 
 
@@ -32,31 +36,8 @@ def enc(s):
     return urllib.parse.quote(str(s), safe="!~*'()")
 
 
-def get_key():
-    for url in APIS:
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-            with urllib.request.urlopen(req, timeout=30) as r:
-                data = json.loads(r.read().decode())
-            cfg = data["content"] if isinstance(data.get("content"), dict) and data["content"].get("private_key") else data
-            for f in ("private_key", "endpoint_pub_key", "ipv4"):
-                if not cfg.get(f):
-                    raise ValueError(f"missing {f}")
-            return cfg
-        except Exception as e:
-            print(f"{url} failed: {e}")
-            time.sleep(2)
-    raise SystemExit("all APIs failed")
-
-
-def pick_nodes():
-    used, nodes = set(), []
-    while len(nodes) < COUNT:
-        n = (f"162.159.198.{random.randint(1, 254)}", random.choice(PORTS))
-        if n not in used:
-            used.add(n)
-            nodes.append(n)
-    return nodes
+def valid_key(cfg):
+    return isinstance(cfg, dict) and all(cfg.get(f) for f in ("private_key", "endpoint_pub_key", "ipv4"))
 
 
 def tunnel_addresses(k):
@@ -66,7 +47,77 @@ def tunnel_addresses(k):
     return address
 
 
-def masque_stream_settings(k):
+def pick_nodes(n):
+    used, nodes = set(), []
+    while len(nodes) < n:
+        node = (f"162.159.198.{random.randint(1, 254)}", random.choice(PORTS))
+        if node not in used:
+            used.add(node)
+            nodes.append(node)
+    return nodes
+
+
+# ======================= منبع ۱: مستقیم از کلودفلر (با usque) =======================
+def register_direct():
+    exe = os.environ.get("USQUE_BIN") or shutil.which("usque")
+    if not exe and Path("bin/usque").exists():
+        exe = "bin/usque"
+    if not exe:
+        print("[direct] usque not found, skipping")
+        return None
+    exe = str(Path(exe).resolve())
+    with tempfile.TemporaryDirectory() as d:
+        cfg_path = Path(d) / "config.json"
+        try:
+            # "y" برای پذیرش شرایط استفاده، اگر ابزار سؤالی بپرسد
+            subprocess.run([exe, "-c", str(cfg_path), "register"], input="y\n", text=True,
+                           capture_output=True, timeout=120, check=True, cwd=d)
+            cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+            if not valid_key(cfg):
+                raise ValueError("config.json lacks required fields")
+            print("[direct] registered OK")
+            return cfg
+        except subprocess.CalledProcessError as e:
+            print("[direct] failed:", ((e.stderr or "") + (e.stdout or ""))[-300:])
+        except Exception as e:
+            print(f"[direct] failed: {e}")
+    return None
+
+
+# ======================= منبع ۲: Worker =======================
+def get_key_worker():
+    for url in APIS:
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=30) as r:
+                data = json.loads(r.read().decode())
+            cfg = data["content"] if isinstance(data.get("content"), dict) and data["content"].get("private_key") else data
+            if not valid_key(cfg):
+                raise ValueError("response lacks required fields")
+            print(f"[worker] OK from {url}")
+            return cfg
+        except Exception as e:
+            print(f"[worker] {url} failed: {e}")
+            time.sleep(2)
+    return None
+
+
+# ======================= ساخت لیست نودها (همه منابع × همه مودها) =======================
+def build_entries(sources):
+    entries = []
+    for src, k in sources:
+        for mode in MODES:
+            for ip, port in pick_nodes(PER_GROUP):
+                entries.append({"k": k, "src": src, "mode": mode, "ip": ip, "port": port})
+    return entries
+
+
+def label(e):
+    return f"{e['mode'].upper()} | {e['src']} | {e['ip']} | {e['port']}"
+
+
+def stream_settings(e):
+    k = e["k"]
     return {
         "method": "masque",
         "masqueSettings": {"warp": {
@@ -75,33 +126,25 @@ def masque_stream_settings(k):
             "address": tunnel_addresses(k),
         }},
         "security": "tls",
-        "tlsSettings": {"serverName": SNI, "alpn": [MODE]},
+        "tlsSettings": {"serverName": SNI, "alpn": [e["mode"]]},
     }
 
 
 # ======================= Xray (v2rayN / Throne / OneXray) =======================
-def build_xray(k, nodes):
-    outbounds = []
-    for ip, port in nodes:
-        outbounds.append({
-            "protocol": "masque",
-            "settings": {"address": ip, "port": int(port), "remoteDNS": DNS},
-            "streamSettings": masque_stream_settings(k),
-            "tag": f"{MODE.upper()} | Official | {ip} | {port}",
-        })
+def build_xray(entries):
+    outbounds = [{
+        "protocol": "masque",
+        "settings": {"address": e["ip"], "port": int(e["port"]), "remoteDNS": DNS},
+        "streamSettings": stream_settings(e),
+        "tag": label(e),
+    } for e in entries]
     return json.dumps({"log": {"loglevel": "warning"}, "outbounds": outbounds}, indent=2)
 
 
 # ======================= Mobile (PingNG / v2rayNG / Happ / Streisand) =======================
-def build_xray_mobile(k, nodes):
+def build_xray_mobile(entries):
     items = []
-    for ip, port in nodes:
-        outbound = {
-            "protocol": "masque",
-            "settings": {"address": ip, "port": int(port), "remoteDNS": DNS},
-            "streamSettings": masque_stream_settings(k),
-            "tag": "proxy",
-        }
+    for e in entries:
         items.append({
             "log": {"loglevel": "warning"},
             "dns": {
@@ -131,7 +174,12 @@ def build_xray_mobile(k, nodes):
                 "settings": {"auth": "noauth", "udp": True, "allowTransparent": False},
             }],
             "outbounds": [
-                outbound,
+                {
+                    "protocol": "masque",
+                    "settings": {"address": e["ip"], "port": int(e["port"]), "remoteDNS": DNS},
+                    "streamSettings": stream_settings(e),
+                    "tag": "proxy",
+                },
                 {"tag": "direct", "protocol": "freedom"},
                 {"tag": "block", "protocol": "blackhole"},
             ],
@@ -151,7 +199,7 @@ def build_xray_mobile(k, nodes):
             "metrics": {"listen": "127.0.0.1:10812"},
             "policy": {"system": {"statsOutboundUplink": True, "statsOutboundDownlink": True}},
             "stats": {},
-            "remarks": f"{MODE.upper()} | Official | {ip} | {port} | MASQUE Nav",
+            "remarks": label(e) + " | MASQUE Nav",
         })
     return json.dumps(items, indent=2)
 
@@ -254,22 +302,21 @@ __PROXIES__
 """
 
 
-def build_clash(k, nodes):
-    v4 = k["ipv4"].split("/")[0]
-    v6 = (k.get("ipv6") or "").split("/")[0]
-    priv = k["private_key"].strip()
-    pub = pem_body(k["endpoint_pub_key"])
+def build_clash(entries):
     names, blocks = [], []
-    for ip, port in nodes:
-        name = f"Official | {ip} | {port} | MASQUE Nav"
+    for e in entries:
+        k = e["k"]
+        v4 = k["ipv4"].split("/")[0]
+        v6 = (k.get("ipv6") or "").split("/")[0]
+        name = label(e)
         names.append(name)
         lines = [
             f'  - name: "{name}"',
             "    type: masque",
-            f"    server: {ip}",
-            f"    port: {port}",
-            f'    private-key: "{priv}"',
-            f'    public-key: "{pub}"',
+            f"    server: {e['ip']}",
+            f"    port: {e['port']}",
+            f'    private-key: "{k["private_key"].strip()}"',
+            f'    public-key: "{pem_body(k["endpoint_pub_key"])}"',
             f"    ip: {v4}",
         ]
         if v6:
@@ -283,7 +330,7 @@ def build_clash(k, nodes):
             f"    dns: [ {', '.join(DNS)} ]",
             f"    sni: {SNI}",
         ]
-        if MODE == "h2":
+        if e["mode"] == "h2":
             lines.append("    network: h2")
         blocks.append("\n".join(lines))
     stamp = datetime.now(timezone.utc).strftime("%Y/%m/%d %H:%M:%S UTC")
@@ -295,17 +342,15 @@ def build_clash(k, nodes):
 
 
 # ======================= MahsaNG (masque:// links) =======================
-def build_mahsa_links(k, nodes):
-    raw = pem_body(k["private_key"])
-    address = tunnel_addresses(k)
+def build_mahsa_links(entries):
     first_dns = DNS[0] if DNS else "1.1.1.1"
-
     links = []
-    for ip, port in nodes:
-        host = f"[{ip}]" if ":" in ip else ip
+    for e in entries:
+        k = e["k"]
+        host = f"[{e['ip']}]" if ":" in e["ip"] else e["ip"]
         q = [
-            ("transport", MODE),
-            ("address", ",".join(address)),
+            ("transport", e["mode"]),
+            ("address", ",".join(tunnel_addresses(k))),
             ("mtu", "1280"),
             ("remoteDNS", first_dns),
             ("sni", SNI),
@@ -313,24 +358,34 @@ def build_mahsa_links(k, nodes):
             ("keepalive", "5"),
         ]
         query = "&".join(f"{a}={enc(b)}" for a, b in q)
-        tag = f"{MODE.upper()} | Official | {ip} | {port} | MASQUE Nav"
-        links.append(f"masque://{enc(raw)}@{host}:{port}?{query}#{enc(tag)}")
+        links.append(f"masque://{enc(pem_body(k['private_key']))}@{host}:{e['port']}?{query}#{enc(label(e) + ' | MASQUE Nav')}")
     return "\n".join(links)
 
 
 # ======================= اجرای اصلی =======================
 def main():
-    k = get_key()
-    nodes = pick_nodes()
-    Path("output").mkdir(exist_ok=True)
+    sources = []
+    direct = register_direct()
+    if direct:
+        sources.append(("Direct", direct))
+    time.sleep(2)
+    worker = get_key_worker()
+    if worker:
+        sources.append(("Worker", worker))
+    if not sources:
+        raise SystemExit("no key source worked")
 
-    xray_json = build_xray(k, nodes)
-    Path("output/masque-xray.json").write_text(xray_json, encoding="utf-8")
-    Path("output/masque-xray.txt").write_text(xray_json, encoding="utf-8")
-    Path("output/masque-mobile.json").write_text(build_xray_mobile(k, nodes), encoding="utf-8")
-    Path("output/masque-clash.yaml").write_text(build_clash(k, nodes), encoding="utf-8")
-    Path("output/masque-mahsang.txt").write_text(build_mahsa_links(k, nodes), encoding="utf-8")
-    print(f"wrote {len(nodes)} nodes (xray json+txt, mobile json, clash yaml, mahsang links)")
+    entries = build_entries(sources)
+    out = Path("output")
+    out.mkdir(exist_ok=True)
+
+    xray_json = build_xray(entries)
+    (out / "masque-xray.json").write_text(xray_json, encoding="utf-8")
+    (out / "masque-xray.txt").write_text(xray_json, encoding="utf-8")
+    (out / "masque-mobile.json").write_text(build_xray_mobile(entries), encoding="utf-8")
+    (out / "masque-clash.yaml").write_text(build_clash(entries), encoding="utf-8")
+    (out / "masque-mahsang.txt").write_text(build_mahsa_links(entries), encoding="utf-8")
+    print(f"sources: {[s for s, _ in sources]} | nodes: {len(entries)} (H2+H3)")
 
 
 main()
