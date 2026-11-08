@@ -8,6 +8,7 @@ import tempfile
 import time
 import urllib.parse
 import urllib.request
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -19,8 +20,20 @@ APIS = [
     "https://masque.configwireguard4.workers.dev/",
 ]
 PORTS = ["8095", "443", "8443", "4443", "1701", "4500", "500"]
-MODES = ["h2", "h3"]             # هر دو نسخه ساخته می‌شود
-PER_GROUP = 5                    # تعداد نود برای هر (منبع × مود)
+
+MODES = ["h2", "h3"]            # نسخه‌ها
+FAMILIES = ["v4", "v6"]         # نوع آدرس سرور (اگر IPv6 نداری، فقط ["v4"] بگذار)
+
+# تعداد نود برای هر ترکیب (مود × نوع آدرس) در هر منبع
+# مجموع = مجموع مقادیر × تعداد مودها × تعداد familyها
+NODES_PER_COMBO = {"Direct": 3, "Worker": 3}
+
+# endpointهای ثابت رسمی (از هر گروه یک نود ثابت انتخاب می‌شود، اگر تعداد گروه ≥ ۲ باشد)
+FIXED = {
+    "v4": ["162.159.198.2", "162.159.199.2"],
+    "v6": ["2606:4700:103::2", "2606:4700:104::2"],
+}
+
 SNI = "www.cloudflare.com"
 DNS = ["1.1.1.1", "8.8.8.8"]
 TRACE_URL = "https://cloudflare.com/cdn-cgi/trace"
@@ -47,13 +60,29 @@ def tunnel_addresses(k):
     return address
 
 
-def pick_nodes(n):
+def rand_ip(family):
+    if family == "v4":
+        return f"162.159.198.{random.randint(1, 254)}"
+    groups = [f"{random.randint(0, 65535):x}" for _ in range(4)]
+    return ":".join(["2606", "4700", "103", "0"] + groups)
+
+
+def pick_nodes(family, n):
     used, nodes = set(), []
-    while len(nodes) < n:
-        node = (f"162.159.198.{random.randint(1, 254)}", random.choice(PORTS))
-        if node not in used:
-            used.add(node)
-            nodes.append(node)
+
+    def add(ip):
+        port = random.choice(PORTS)
+        if (ip, port) in used:
+            return False
+        used.add((ip, port))
+        nodes.append((ip, port))
+        return True
+
+    if n >= 2:                               # یک نود ثابت رسمی
+        while not add(random.choice(FIXED[family])):
+            pass
+    while len(nodes) < n:                    # بقیه از رنج تصادفی
+        add(rand_ip(family))
     return nodes
 
 
@@ -102,13 +131,15 @@ def get_key_worker():
     return None
 
 
-# ======================= ساخت لیست نودها (همه منابع × همه مودها) =======================
+# ======================= ساخت لیست نودها: منبع × مود × نوع آدرس =======================
 def build_entries(sources):
     entries = []
     for src, k in sources:
+        n = NODES_PER_COMBO.get(src, 3)
         for mode in MODES:
-            for ip, port in pick_nodes(PER_GROUP):
-                entries.append({"k": k, "src": src, "mode": mode, "ip": ip, "port": port})
+            for fam in FAMILIES:
+                for ip, port in pick_nodes(fam, n):
+                    entries.append({"k": k, "src": src, "mode": mode, "fam": fam, "ip": ip, "port": port})
     return entries
 
 
@@ -212,7 +243,7 @@ mode: rule
 allow-lan: true
 mixed-port: 7890
 bind-address: '*'
-ipv6: false
+ipv6: __IPV6__
 unified-delay: true
 tcp-concurrent: true
 log-level: info
@@ -242,7 +273,7 @@ sniffer:
 
 dns:
   enable: true
-  ipv6: false
+  ipv6: __IPV6__
   listen: 0.0.0.0:1053
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
@@ -313,7 +344,7 @@ def build_clash(entries):
         lines = [
             f'  - name: "{name}"',
             "    type: masque",
-            f"    server: {e['ip']}",
+            f'    server: "{e["ip"]}"',
             f"    port: {e['port']}",
             f'    private-key: "{k["private_key"].strip()}"',
             f'    public-key: "{pem_body(k["endpoint_pub_key"])}"',
@@ -333,9 +364,11 @@ def build_clash(entries):
         if e["mode"] == "h2":
             lines.append("    network: h2")
         blocks.append("\n".join(lines))
+    has_v6 = any(e["fam"] == "v6" for e in entries)
     stamp = datetime.now(timezone.utc).strftime("%Y/%m/%d %H:%M:%S UTC")
     return (CLASH_TEMPLATE
             .replace("__STAMP__", stamp)
+            .replace("__IPV6__", "true" if has_v6 else "false")
             .replace("__TRACE__", TRACE_URL)
             .replace("__NAMES__", json.dumps(names))
             .replace("__PROXIES__", "\n\n".join(blocks)))
@@ -385,7 +418,12 @@ def main():
     (out / "masque-mobile.json").write_text(build_xray_mobile(entries), encoding="utf-8")
     (out / "masque-clash.yaml").write_text(build_clash(entries), encoding="utf-8")
     (out / "masque-mahsang.txt").write_text(build_mahsa_links(entries), encoding="utf-8")
-    print(f"sources: {[s for s, _ in sources]} | nodes: {len(entries)} (H2+H3)")
+
+    # خلاصه‌ی ترکیب‌ها در لاگ (بدون هیچ کلیدی)
+    summary = Counter((e["src"], e["mode"].upper(), e["fam"]) for e in entries)
+    for (src, mode, fam), n in sorted(summary.items()):
+        print(f"  {src:7} {mode} {fam}: {n}")
+    print(f"total nodes: {len(entries)} | sources: {[s for s, _ in sources]}")
 
 
 main()
