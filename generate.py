@@ -66,27 +66,94 @@ def tunnel_addresses(k):
     return address
 
 
+def masque_stream_settings(k):
+    return {
+        "method": "masque",
+        "masqueSettings": {"warp": {
+            "privateKey": k["private_key"].strip(),
+            "publicKey": pem_body(k["endpoint_pub_key"]),
+            "address": tunnel_addresses(k),
+        }},
+        "security": "tls",
+        "tlsSettings": {"serverName": SNI, "alpn": [MODE]},
+    }
+
+
 # ======================= Xray (v2rayN / Throne / OneXray) =======================
 def build_xray(k, nodes):
-    address = tunnel_addresses(k)
     outbounds = []
     for ip, port in nodes:
         outbounds.append({
             "protocol": "masque",
             "settings": {"address": ip, "port": int(port), "remoteDNS": DNS},
-            "streamSettings": {
-                "method": "masque",
-                "masqueSettings": {"warp": {
-                    "privateKey": k["private_key"].strip(),
-                    "publicKey": pem_body(k["endpoint_pub_key"]),
-                    "address": address,
-                }},
-                "security": "tls",
-                "tlsSettings": {"serverName": SNI, "alpn": [MODE]},
-            },
+            "streamSettings": masque_stream_settings(k),
             "tag": f"{MODE.upper()} | Official | {ip} | {port}",
         })
     return json.dumps({"log": {"loglevel": "warning"}, "outbounds": outbounds}, indent=2)
+
+
+# ======================= Mobile (PingNG / v2rayNG / Happ / Streisand) =======================
+def build_xray_mobile(k, nodes):
+    items = []
+    for ip, port in nodes:
+        outbound = {
+            "protocol": "masque",
+            "settings": {"address": ip, "port": int(port), "remoteDNS": DNS},
+            "streamSettings": masque_stream_settings(k),
+            "tag": "proxy",
+        }
+        items.append({
+            "log": {"loglevel": "warning"},
+            "dns": {
+                "hosts": {
+                    "one.one.one.one": ["1.1.1.1", "1.0.0.1", "2606:4700:4700::1111", "2606:4700:4700::1001"],
+                    "dns.google": ["8.8.8.8", "8.8.4.4", "2001:4860:4860::8888", "2001:4860:4860::8844"],
+                    "cloudflare-dns.com": ["104.16.249.249", "104.16.248.249", "2606:4700::6810:f8f9", "2606:4700::6810:f9f9"],
+                    "dns.cloudflare.com": ["162.159.61.8", "172.64.41.8", "2a06:98c1:52::8", "2803:f800:53::8"],
+                    "dns.quad9.net": ["9.9.9.9", "149.112.112.112", "2620:fe::fe", "2620:fe::9"],
+                    "engage.cloudflareclient.com": ["162.159.192.1", "2606:4700:d0::a29f:c001"],
+                },
+                "servers": [
+                    {"address": "localhost", "domains": ["geosite:category-ir", "domain:ir"],
+                     "skipFallback": True, "tag": "direct-dns"},
+                    "https://cloudflare-dns.com/dns-query",
+                    "https://dns.google/dns-query",
+                    "8.8.8.8",
+                ],
+                "tag": "dns-module",
+            },
+            "inbounds": [{
+                "tag": "socks",
+                "port": 10808,
+                "listen": "127.0.0.1",      # اگر اتصال برقرار نشد برای تست "0.0.0.0" بگذار
+                "protocol": "mixed",
+                "sniffing": {"enabled": False, "destOverride": ["http", "tls"], "routeOnly": False},
+                "settings": {"auth": "noauth", "udp": True, "allowTransparent": False},
+            }],
+            "outbounds": [
+                outbound,
+                {"tag": "direct", "protocol": "freedom"},
+                {"tag": "block", "protocol": "blackhole"},
+            ],
+            "routing": {
+                "domainStrategy": "AsIs",
+                "rules": [
+                    {"type": "field", "outboundTag": "proxy", "domain": ["domain:googleapis.cn", "domain:gstatic.com"]},
+                    {"type": "field", "port": "443", "network": "udp", "outboundTag": "block"},
+                    {"type": "field", "outboundTag": "direct", "ip": ["geoip:private"]},
+                    {"type": "field", "outboundTag": "direct", "domain": ["geosite:private"]},
+                    {"type": "field", "outboundTag": "direct", "domain": ["domain:ir", "geosite:category-ir"]},
+                    {"type": "field", "outboundTag": "direct", "ip": ["geoip:ir"]},
+                    {"type": "field", "inboundTag": ["direct-dns"], "outboundTag": "direct"},
+                    {"type": "field", "inboundTag": ["dns-module"], "outboundTag": "proxy"},
+                ],
+            },
+            "metrics": {"listen": "127.0.0.1:10812"},
+            "policy": {"system": {"statsOutboundUplink": True, "statsOutboundDownlink": True}},
+            "stats": {},
+            "remarks": f"{MODE.upper()} | Official | {ip} | {port} | MASQUE Nav",
+        })
+    return json.dumps(items, indent=2)
 
 
 # ======================= Clash (Mihomo) =======================
@@ -260,9 +327,10 @@ def main():
     xray_json = build_xray(k, nodes)
     Path("output/masque-xray.json").write_text(xray_json, encoding="utf-8")
     Path("output/masque-xray.txt").write_text(xray_json, encoding="utf-8")
+    Path("output/masque-mobile.json").write_text(build_xray_mobile(k, nodes), encoding="utf-8")
     Path("output/masque-clash.yaml").write_text(build_clash(k, nodes), encoding="utf-8")
     Path("output/masque-mahsang.txt").write_text(build_mahsa_links(k, nodes), encoding="utf-8")
-    print(f"wrote {len(nodes)} nodes (xray json+txt, clash yaml, mahsang links)")
+    print(f"wrote {len(nodes)} nodes (xray json+txt, mobile json, clash yaml, mahsang links)")
 
 
 main()
