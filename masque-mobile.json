@@ -1,0 +1,4658 @@
+[
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "162.159.199.2",
+          "port": 4500,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIHLv10QoXMDLgJDK22A0TcS2vew8vEY7U2LWSU3mPcPtoAoGCCqGSM49AwEHoUQDQgAEyPXF4W1emWj5TLEJwWAOdtXDXekGzELuAeT6rgOZ/edU5HDSTt1fxa8iSjbJqq1kVrU1eMbrQ7rlbSZTA187Eg==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8d55:f2ef:7c6d:db85:9dca/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h2"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H2 | Direct | 162.159.199.2 | 4500 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "162.159.198.127",
+          "port": 8095,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIHLv10QoXMDLgJDK22A0TcS2vew8vEY7U2LWSU3mPcPtoAoGCCqGSM49AwEHoUQDQgAEyPXF4W1emWj5TLEJwWAOdtXDXekGzELuAeT6rgOZ/edU5HDSTt1fxa8iSjbJqq1kVrU1eMbrQ7rlbSZTA187Eg==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8d55:f2ef:7c6d:db85:9dca/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h2"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H2 | Direct | 162.159.198.127 | 8095 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "162.159.198.225",
+          "port": 1701,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIHLv10QoXMDLgJDK22A0TcS2vew8vEY7U2LWSU3mPcPtoAoGCCqGSM49AwEHoUQDQgAEyPXF4W1emWj5TLEJwWAOdtXDXekGzELuAeT6rgOZ/edU5HDSTt1fxa8iSjbJqq1kVrU1eMbrQ7rlbSZTA187Eg==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8d55:f2ef:7c6d:db85:9dca/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h2"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H2 | Direct | 162.159.198.225 | 1701 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "2606:4700:103::2",
+          "port": 1701,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIHLv10QoXMDLgJDK22A0TcS2vew8vEY7U2LWSU3mPcPtoAoGCCqGSM49AwEHoUQDQgAEyPXF4W1emWj5TLEJwWAOdtXDXekGzELuAeT6rgOZ/edU5HDSTt1fxa8iSjbJqq1kVrU1eMbrQ7rlbSZTA187Eg==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8d55:f2ef:7c6d:db85:9dca/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h2"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H2 | Direct | 2606:4700:103::2 | 1701 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "2606:4700:103:0:399:9cb0:3555:c55f",
+          "port": 8443,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIHLv10QoXMDLgJDK22A0TcS2vew8vEY7U2LWSU3mPcPtoAoGCCqGSM49AwEHoUQDQgAEyPXF4W1emWj5TLEJwWAOdtXDXekGzELuAeT6rgOZ/edU5HDSTt1fxa8iSjbJqq1kVrU1eMbrQ7rlbSZTA187Eg==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8d55:f2ef:7c6d:db85:9dca/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h2"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H2 | Direct | 2606:4700:103:0:399:9cb0:3555:c55f | 8443 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "2606:4700:103:0:d472:651b:19c8:d937",
+          "port": 4443,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIHLv10QoXMDLgJDK22A0TcS2vew8vEY7U2LWSU3mPcPtoAoGCCqGSM49AwEHoUQDQgAEyPXF4W1emWj5TLEJwWAOdtXDXekGzELuAeT6rgOZ/edU5HDSTt1fxa8iSjbJqq1kVrU1eMbrQ7rlbSZTA187Eg==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8d55:f2ef:7c6d:db85:9dca/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h2"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H2 | Direct | 2606:4700:103:0:d472:651b:19c8:d937 | 4443 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "162.159.198.2",
+          "port": 443,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIHLv10QoXMDLgJDK22A0TcS2vew8vEY7U2LWSU3mPcPtoAoGCCqGSM49AwEHoUQDQgAEyPXF4W1emWj5TLEJwWAOdtXDXekGzELuAeT6rgOZ/edU5HDSTt1fxa8iSjbJqq1kVrU1eMbrQ7rlbSZTA187Eg==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8d55:f2ef:7c6d:db85:9dca/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h3"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H3 | Direct | 162.159.198.2 | 443 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "162.159.198.160",
+          "port": 4500,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIHLv10QoXMDLgJDK22A0TcS2vew8vEY7U2LWSU3mPcPtoAoGCCqGSM49AwEHoUQDQgAEyPXF4W1emWj5TLEJwWAOdtXDXekGzELuAeT6rgOZ/edU5HDSTt1fxa8iSjbJqq1kVrU1eMbrQ7rlbSZTA187Eg==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8d55:f2ef:7c6d:db85:9dca/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h3"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H3 | Direct | 162.159.198.160 | 4500 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "162.159.198.158",
+          "port": 8095,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIHLv10QoXMDLgJDK22A0TcS2vew8vEY7U2LWSU3mPcPtoAoGCCqGSM49AwEHoUQDQgAEyPXF4W1emWj5TLEJwWAOdtXDXekGzELuAeT6rgOZ/edU5HDSTt1fxa8iSjbJqq1kVrU1eMbrQ7rlbSZTA187Eg==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8d55:f2ef:7c6d:db85:9dca/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h3"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H3 | Direct | 162.159.198.158 | 8095 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "2606:4700:103::2",
+          "port": 443,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIHLv10QoXMDLgJDK22A0TcS2vew8vEY7U2LWSU3mPcPtoAoGCCqGSM49AwEHoUQDQgAEyPXF4W1emWj5TLEJwWAOdtXDXekGzELuAeT6rgOZ/edU5HDSTt1fxa8iSjbJqq1kVrU1eMbrQ7rlbSZTA187Eg==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8d55:f2ef:7c6d:db85:9dca/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h3"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H3 | Direct | 2606:4700:103::2 | 443 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "2606:4700:103:0:e93f:e27d:f54f:e81c",
+          "port": 8095,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIHLv10QoXMDLgJDK22A0TcS2vew8vEY7U2LWSU3mPcPtoAoGCCqGSM49AwEHoUQDQgAEyPXF4W1emWj5TLEJwWAOdtXDXekGzELuAeT6rgOZ/edU5HDSTt1fxa8iSjbJqq1kVrU1eMbrQ7rlbSZTA187Eg==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8d55:f2ef:7c6d:db85:9dca/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h3"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H3 | Direct | 2606:4700:103:0:e93f:e27d:f54f:e81c | 8095 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "2606:4700:103:0:7c2c:94f3:73c:ea0e",
+          "port": 443,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIHLv10QoXMDLgJDK22A0TcS2vew8vEY7U2LWSU3mPcPtoAoGCCqGSM49AwEHoUQDQgAEyPXF4W1emWj5TLEJwWAOdtXDXekGzELuAeT6rgOZ/edU5HDSTt1fxa8iSjbJqq1kVrU1eMbrQ7rlbSZTA187Eg==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8d55:f2ef:7c6d:db85:9dca/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h3"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H3 | Direct | 2606:4700:103:0:7c2c:94f3:73c:ea0e | 443 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "162.159.199.2",
+          "port": 1701,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIH3oC8UWlWdcQaxxdX5itM+tY5qBiRAW9PgEhkdMdE5toAoGCCqGSM49AwEHoUQDQgAEfkDHMxgDK1v5zTdDdO1mApOvaRbCJTzyzg4w89gC/sEZB0G9gxIzzSUJivvIH2CM8SwzphgFHqJHlnd0B5aF7w==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8aaa:3984:dec7:c9e2:b745/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h2"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H2 | Worker | 162.159.199.2 | 1701 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "162.159.198.98",
+          "port": 4443,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIH3oC8UWlWdcQaxxdX5itM+tY5qBiRAW9PgEhkdMdE5toAoGCCqGSM49AwEHoUQDQgAEfkDHMxgDK1v5zTdDdO1mApOvaRbCJTzyzg4w89gC/sEZB0G9gxIzzSUJivvIH2CM8SwzphgFHqJHlnd0B5aF7w==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8aaa:3984:dec7:c9e2:b745/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h2"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H2 | Worker | 162.159.198.98 | 4443 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "162.159.198.213",
+          "port": 4443,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIH3oC8UWlWdcQaxxdX5itM+tY5qBiRAW9PgEhkdMdE5toAoGCCqGSM49AwEHoUQDQgAEfkDHMxgDK1v5zTdDdO1mApOvaRbCJTzyzg4w89gC/sEZB0G9gxIzzSUJivvIH2CM8SwzphgFHqJHlnd0B5aF7w==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8aaa:3984:dec7:c9e2:b745/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h2"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H2 | Worker | 162.159.198.213 | 4443 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "2606:4700:103::2",
+          "port": 8095,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIH3oC8UWlWdcQaxxdX5itM+tY5qBiRAW9PgEhkdMdE5toAoGCCqGSM49AwEHoUQDQgAEfkDHMxgDK1v5zTdDdO1mApOvaRbCJTzyzg4w89gC/sEZB0G9gxIzzSUJivvIH2CM8SwzphgFHqJHlnd0B5aF7w==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8aaa:3984:dec7:c9e2:b745/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h2"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H2 | Worker | 2606:4700:103::2 | 8095 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "2606:4700:103:0:9f1f:eae3:87f2:8f9",
+          "port": 8095,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIH3oC8UWlWdcQaxxdX5itM+tY5qBiRAW9PgEhkdMdE5toAoGCCqGSM49AwEHoUQDQgAEfkDHMxgDK1v5zTdDdO1mApOvaRbCJTzyzg4w89gC/sEZB0G9gxIzzSUJivvIH2CM8SwzphgFHqJHlnd0B5aF7w==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8aaa:3984:dec7:c9e2:b745/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h2"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H2 | Worker | 2606:4700:103:0:9f1f:eae3:87f2:8f9 | 8095 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "2606:4700:103:0:b80b:ef3b:e2ee:2fcc",
+          "port": 4443,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIH3oC8UWlWdcQaxxdX5itM+tY5qBiRAW9PgEhkdMdE5toAoGCCqGSM49AwEHoUQDQgAEfkDHMxgDK1v5zTdDdO1mApOvaRbCJTzyzg4w89gC/sEZB0G9gxIzzSUJivvIH2CM8SwzphgFHqJHlnd0B5aF7w==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8aaa:3984:dec7:c9e2:b745/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h2"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H2 | Worker | 2606:4700:103:0:b80b:ef3b:e2ee:2fcc | 4443 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "162.159.199.2",
+          "port": 4500,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIH3oC8UWlWdcQaxxdX5itM+tY5qBiRAW9PgEhkdMdE5toAoGCCqGSM49AwEHoUQDQgAEfkDHMxgDK1v5zTdDdO1mApOvaRbCJTzyzg4w89gC/sEZB0G9gxIzzSUJivvIH2CM8SwzphgFHqJHlnd0B5aF7w==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8aaa:3984:dec7:c9e2:b745/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h3"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H3 | Worker | 162.159.199.2 | 4500 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "162.159.198.27",
+          "port": 500,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIH3oC8UWlWdcQaxxdX5itM+tY5qBiRAW9PgEhkdMdE5toAoGCCqGSM49AwEHoUQDQgAEfkDHMxgDK1v5zTdDdO1mApOvaRbCJTzyzg4w89gC/sEZB0G9gxIzzSUJivvIH2CM8SwzphgFHqJHlnd0B5aF7w==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8aaa:3984:dec7:c9e2:b745/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h3"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H3 | Worker | 162.159.198.27 | 500 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "162.159.198.220",
+          "port": 8095,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIH3oC8UWlWdcQaxxdX5itM+tY5qBiRAW9PgEhkdMdE5toAoGCCqGSM49AwEHoUQDQgAEfkDHMxgDK1v5zTdDdO1mApOvaRbCJTzyzg4w89gC/sEZB0G9gxIzzSUJivvIH2CM8SwzphgFHqJHlnd0B5aF7w==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8aaa:3984:dec7:c9e2:b745/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h3"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H3 | Worker | 162.159.198.220 | 8095 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "2606:4700:104::2",
+          "port": 8095,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIH3oC8UWlWdcQaxxdX5itM+tY5qBiRAW9PgEhkdMdE5toAoGCCqGSM49AwEHoUQDQgAEfkDHMxgDK1v5zTdDdO1mApOvaRbCJTzyzg4w89gC/sEZB0G9gxIzzSUJivvIH2CM8SwzphgFHqJHlnd0B5aF7w==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8aaa:3984:dec7:c9e2:b745/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h3"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H3 | Worker | 2606:4700:104::2 | 8095 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "2606:4700:103:0:e61c:8a3e:d776:5811",
+          "port": 1701,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIH3oC8UWlWdcQaxxdX5itM+tY5qBiRAW9PgEhkdMdE5toAoGCCqGSM49AwEHoUQDQgAEfkDHMxgDK1v5zTdDdO1mApOvaRbCJTzyzg4w89gC/sEZB0G9gxIzzSUJivvIH2CM8SwzphgFHqJHlnd0B5aF7w==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8aaa:3984:dec7:c9e2:b745/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h3"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H3 | Worker | 2606:4700:103:0:e61c:8a3e:d776:5811 | 1701 | MASQUE Nav"
+  },
+  {
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "cloudflare-dns.com": [
+          "104.16.249.249",
+          "104.16.248.249",
+          "2606:4700::6810:f8f9",
+          "2606:4700::6810:f9f9"
+        ],
+        "dns.cloudflare.com": [
+          "162.159.61.8",
+          "172.64.41.8",
+          "2a06:98c1:52::8",
+          "2803:f800:53::8"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "engage.cloudflareclient.com": [
+          "162.159.192.1",
+          "2606:4700:d0::a29f:c001"
+        ]
+      },
+      "servers": [
+        {
+          "address": "localhost",
+          "domains": [
+            "geosite:category-ir",
+            "domain:ir"
+          ],
+          "skipFallback": true,
+          "tag": "direct-dns"
+        },
+        "https://cloudflare-dns.com/dns-query",
+        "https://dns.google/dns-query",
+        "8.8.8.8"
+      ],
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "sniffing": {
+          "enabled": false,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        },
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "masque",
+        "settings": {
+          "address": "2606:4700:103:0:ffd3:c121:1631:c0ba",
+          "port": 8095,
+          "remoteDNS": [
+            "1.1.1.1",
+            "8.8.8.8"
+          ]
+        },
+        "streamSettings": {
+          "method": "masque",
+          "masqueSettings": {
+            "warp": {
+              "privateKey": "MHcCAQEEIH3oC8UWlWdcQaxxdX5itM+tY5qBiRAW9PgEhkdMdE5toAoGCCqGSM49AwEHoUQDQgAEfkDHMxgDK1v5zTdDdO1mApOvaRbCJTzyzg4w89gC/sEZB0G9gxIzzSUJivvIH2CM8SwzphgFHqJHlnd0B5aF7w==",
+              "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIaU7MToJm9NKp8YfGxR6r+/h4mcG7SxI8tsW8OR1A5tv/zCzVbCRRh2t87/kxnP6lAy0lkr7qYwu+ox+k3dr6w==",
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8aaa:3984:dec7:c9e2:b745/128"
+              ]
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.cloudflare.com",
+            "alpn": [
+              "h3"
+            ]
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "domain:googleapis.cn",
+            "domain:gstatic.com"
+          ]
+        },
+        {
+          "type": "field",
+          "port": "443",
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "geosite:private"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "domain:ir",
+            "geosite:category-ir"
+          ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:ir"
+          ]
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "direct-dns"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "metrics": {
+      "listen": "127.0.0.1:10812"
+    },
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    },
+    "stats": {},
+    "remarks": "H3 | Worker | 2606:4700:103:0:ffd3:c121:1631:c0ba | 8095 | MASQUE Nav"
+  }
+]
